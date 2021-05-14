@@ -5,13 +5,11 @@ const getCredit = (req, res) => {
     sql.connect(config, (err) => {
         if (err) {
             res.status(400).send(err.message);
-
         } else {
-
             var request = new sql.Request();
             request.query(`SELECT * FROM Accounts WHERE Accounts.id = '${req.params.id}'`, (e, r) => {
                 if (e) {
-                    res.status(400).send(false);
+                    res.status(400).send(e.message);
                 } else {
                     if (r.recordset.length === 0) {
                         res.status(200).send(false);
@@ -47,7 +45,64 @@ const updateAccount = (req, res) => {
     });
 }
 
+const beginTrans = (req, res) => {
+    sql.connect(config, (err) => {
+        if (err) {
+            res.status(400).send(err.message);
+
+        } else {
+            var request = new sql.Request();
+            request.query(`BEGIN TRAN`, (e, r) => {
+                if (e) {
+                    res.status(400).send(`Request error: ${e.message}`);
+                } else {
+                    res.status(200).send(true);
+                }
+            });
+        }
+    });
+}
+
+const commitTrans = (req, res) => {
+    sql.connect(config, (err) => {
+        if (err) {
+            res.status(400).send(err.message);
+
+        } else {
+            var request = new sql.Request();
+            request.query(`COMMIT`, (e, r) => {
+                if (e) {
+                    res.status(400).send(`Request error: ${e.message}`);
+                } else {
+                    res.status(200).send(true);
+                }
+            });
+        }
+    });
+}
+
+const rollbackTrans = (req, res) => {
+    sql.connect(config, (err) => {
+        if (err) {
+            res.status(400).send(err.message);
+
+        } else {
+            var request = new sql.Request();
+            request.query(`ROLLBACK`, (e, r) => {
+                if (e) {
+                    res.status(400).send(`Request error: ${e.message}`);
+                } else {
+                    res.status(200).send(true);
+                }
+            });
+        }
+    });
+}
+
 module.exports = {
     getCredit, 
-    updateAccount
+    updateAccount, 
+    beginTrans, 
+    commitTrans, 
+    rollbackTrans
 }
